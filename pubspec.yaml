@@ -30,12 +30,24 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  web_socket_channel: ^2.4.0
+  web_socket_channel: ^3.0.3
   shared_preferences: ^2.2.2
+  # cached_network_image: ^3.3.1 # Thêm dòng này
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  http: ^1.2.0 # Thêm dòng này
+  image_picker: ^1.1.2 # Chọn ảnh từ thư viện thiết bị
+  file_picker: ^13.1.0  # Chọn file Excel/JSON trực tiếp từ máy (nếu muốn)
+  path_provider: ^2.1.0 # 🟢 Thêm package này
+  dio: ^5.4.0           # 🟢 Thêm package này nếu dùng FirmwareService
+  logger: ^2.8.0
+  url_launcher: ^6.3.3
+  webview_flutter: ^4.14.1
+  webview_flutter_android: ^4.14.1
+  media_scanner: ^2.2.0
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
   flutter_test:
@@ -59,10 +71,11 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-  - assets/images/overview.webp
+  - assets/images/overview.jpg
   - assets/images/building.jpg
   - assets/images/floor.jpg
   - assets/images/room.jpg
+  - assets/images/background.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

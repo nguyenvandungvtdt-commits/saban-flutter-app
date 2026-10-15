@@ -1,125 +1,4 @@
-// import 'package:flutter/material.dart';
-// import 'floors_list_screen.dart';
-
-// class BuildingsListScreen extends StatefulWidget {
-//   final List<Map<String, dynamic>> buildings;
-//   final Map<int, bool> ledStates;
-//   final Function(List<int> leds, bool state) onToggleLeds;
-//   final bool Function(List<int> leds) isAnyLedOn;
-//   final List<int> Function(List<dynamic> rooms, {int? filterRoomType}) extractLeds;
-//   final int selectedFilterType;
-
-//   const BuildingsListScreen({
-//     super.key,
-//     required this.buildings,
-//     required this.ledStates,
-//     required this.onToggleLeds,
-//     required this.isAnyLedOn,
-//     required this.extractLeds,
-//     required this.selectedFilterType,
-//   });
-
-//   @override
-//   State<BuildingsListScreen> createState() => _BuildingsListScreenState();
-// }
-
-// class _BuildingsListScreenState extends State<BuildingsListScreen> {
-//   List<int> _getBuildingLeds(Map<String, dynamic> building) {
-//     List<int> leds = [];
-//     for (var f in building['floors']) {
-//       leds.addAll(widget.extractLeds(f['rooms'], filterRoomType: widget.selectedFilterType));
-//     }
-//     return leds;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: const Text('Danh Sách Tòa Nhà')),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: GridView.builder(
-//           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-//             crossAxisCount: 2,
-//             crossAxisSpacing: 16,
-//             mainAxisSpacing: 16,
-//             childAspectRatio: 1.1,
-//           ),
-//           itemCount: widget.buildings.length,
-//           itemBuilder: (context, index) {
-//             final b = widget.buildings[index];
-//             List<int> bLeds = _getBuildingLeds(b);
-//             bool isOn = widget.isAnyLedOn(bLeds);
-
-//             return GestureDetector(
-//               onTap: () {
-//                 widget.onToggleLeds(bLeds, !isOn);
-//                 setState(() {});
-//               },
-//               onDoubleTap: () async {
-//                 await Navigator.push(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => FloorsListScreen(
-//                       buildingName: b['name'],
-//                       floors: b['floors'],
-//                       ledStates: widget.ledStates,
-//                       onToggleLeds: widget.onToggleLeds,
-//                       isAnyLedOn: widget.isAnyLedOn,
-//                       extractLeds: widget.extractLeds,
-//                       selectedFilterType: widget.selectedFilterType,
-//                     ),
-//                   ),
-//                 );
-//                 setState(() {});
-//               },
-//               child: AnimatedContainer(
-//                 duration: const Duration(milliseconds: 200),
-//                 decoration: BoxDecoration(
-//                   color: isOn ? Colors.orange.shade400 : Colors.white,
-//                   borderRadius: BorderRadius.circular(16),
-//                   border: Border.all(color: isOn ? Colors.orange : Colors.grey.shade300, width: 2),
-//                   boxShadow: [
-//                     BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 3)),
-//                   ],
-//                 ),
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   children: [
-//                     Icon(
-//                       Icons.apartment,
-//                       size: 40,
-//                       color: isOn ? Colors.white : Colors.teal,
-//                     ),
-//                     const SizedBox(height: 8),
-//                     Text(
-//                       b['name'],
-//                       style: TextStyle(
-//                         fontSize: 18,
-//                         fontWeight: FontWeight.bold,
-//                         color: isOn ? Colors.white : Colors.black87,
-//                       ),
-//                     ),
-//                     const SizedBox(height: 4),
-//                     Text(
-//                       isOn ? 'TRẠNG THÁI: BẬT' : 'TRẠNG THÁI: TẮT',
-//                       style: TextStyle(fontSize: 12, color: isOn ? Colors.white70 : Colors.grey),
-//                     ),
-//                     Text(
-//                       '(${bLeds.length} phòng)',
-//                       style: TextStyle(fontSize: 11, color: isOn ? Colors.white70 : Colors.grey.shade600),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'floors_list_screen.dart';
 
@@ -156,216 +35,369 @@ class _BuildingsListScreenState extends State<BuildingsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const String buildingImagePath = 'assets/images/building.jpg';
+
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          // 1. Ảnh nền Tòa nhà full màn hình
-          // Positioned.fill(
-          //   child: Image.asset(
-          //     'assets/images/building.jpg',
-          //     fit: BoxFit.cover,
-          //     errorBuilder: (context, error, stackTrace) => Container(
-          //       color: Colors.grey.shade900,
-          //       child: const Center(
-          //         child: Icon(Icons.apartment, size: 80, color: Colors.white24),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // 1. Ảnh nền FULL 100% màn hình (Bắt buộc dùng BoxFit.fill hoặc BoxFit.cover)
+          // 1. Nền mờ Glassmorphism
           Positioned.fill(
             child: Image.asset(
-              'assets/images/building.jpg',
-              fit: BoxFit.fill, // Tràn phẳng tuyệt đối cả chiều rộng lẫn chiều cao
-              errorBuilder: (context, error, stackTrace) => Container(color: Colors.grey.shade900),
+              buildingImagePath,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  Container(color: const Color(0xFFE0F2FE)),
             ),
           ),
 
-          // 2. Lớp phủ Gradient Tối làm nổi bật chữ & khung điều khiển
           Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.6),
-                    Colors.black.withValues(alpha: 0.2),
-                    Colors.black.withValues(alpha: 0.8),
-                  ],
-                  stops: const [0.0, 0.4, 1.0],
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0xFFF0F9FF).withValues(alpha: 0.88),
+                      const Color(0xFFE0F2FE).withValues(alpha: 0.82),
+                      const Color(0xFFF8FAFC).withValues(alpha: 0.92),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
 
-          // 3. Nội dung giao diện
+          // 2. Nội dung Giao diện
           SafeArea(
-            child: Column(
-              children: [
-                // Top Bar: Tiêu đề
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const Expanded(
-                        child: Text(
-                          'Danh Sách Tòa Nhà',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [Shadow(blurRadius: 8, color: Colors.black)],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                double screenWidth = constraints.maxWidth;
+                bool isPhone = screenWidth < 600;
+
+                return Column(
+                  children: [
+                    _buildTopBar(context),
+
+                    // KHU VỰC HIỂN THỊ SA BÀN TÒA NHÀ (ADAPTIVE FIT)
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isPhone ? 10.0 : 16.0,
+                          vertical: isPhone ? 4.0 : 6.0,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: InteractiveViewer(
+                            minScale: 1.0,
+                            maxScale: 4.0,
+                            child: Center(
+                              child: Image.asset(
+                                buildingImagePath,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: isPhone ? BoxFit.contain : BoxFit.fitWidth,
+                                alignment: Alignment.center,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Container(color: Colors.white),
+                              ),
+                            ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 48), // Cân bằng không gian với nút Back
-                    ],
-                  ),
-                ),
-
-                const Spacer(),
-
-                // Khung điều khiển danh sách Tòa Nhà ở phía dưới
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.92),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black38,
-                          blurRadius: 16,
-                          offset: Offset(0, 6),
-                        ),
-                      ],
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Chọn Tòa Nhà Để Điều Khiển:',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
 
-                        // Danh sách Tòa Nhà nằm ngang gọn gàng
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: widget.buildings.map((b) {
-                              List<int> bLeds = _getBuildingLeds(b);
-                              bool isOn = widget.isAnyLedOn(bLeds);
-
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 10.0),
-                                child: InkWell(
-                                  onTap: () {
-                                    widget.onToggleLeds(bLeds, !isOn);
-                                    setState(() {});
-                                  },
-                                  onDoubleTap: () async {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => FloorsListScreen(
-                                          buildingName: b['name'],
-                                          floors: b['floors'],
-                                          ledStates: widget.ledStates,
-                                          onToggleLeds: widget.onToggleLeds,
-                                          isAnyLedOn: widget.isAnyLedOn,
-                                          extractLeds: widget.extractLeds,
-                                          selectedFilterType: widget.selectedFilterType,
-                                        ),
-                                      ),
-                                    );
-                                    setState(() {});
-                                  },
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                                    decoration: BoxDecoration(
-                                      color: isOn ? const Color(0xFF009688) : Colors.grey.shade100,
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: isOn ? Colors.teal.shade700 : Colors.grey.shade300,
-                                        width: 1.5,
-                                      ),
-                                      boxShadow: isOn
-                                          ? [
-                                              BoxShadow(
-                                                color: Colors.teal.withValues(alpha: 0.3),
-                                                blurRadius: 8,
-                                                offset: const Offset(0, 3),
-                                              )
-                                            ]
-                                          : [],
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(
-                                          isOn ? Icons.lightbulb : Icons.apartment,
-                                          size: 20,
-                                          color: isOn ? Colors.white : Colors.grey.shade700,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              b['name'],
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                                color: isOn ? Colors.white : Colors.black87,
-                                              ),
-                                            ),
-                                            Text(
-                                              '${bLeds.length} phòng • ${isOn ? "ĐANG BẬT" : "TẮT"}',
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                color: isOn ? Colors.white70 : Colors.grey.shade600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Center(
-                          child: Text(
-                            '• Chạm 1 lần: Bật/Tắt Tòa  |  • Nhấn đúp 2 lần: Xem danh sách tầng',
-                            style: TextStyle(fontSize: 11, color: Colors.black54),
-                          ),
-                        ),
-                      ],
+                    // BẢNG ĐIỀU KHIỂN TÒA NHÀ CĂN GIỮA ADAPTIVE
+                    Padding(
+                      padding: EdgeInsets.all(isPhone ? 8.0 : 12.0),
+                      child: _buildAdaptiveBuildingPanel(context, isPhone),
                     ),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTopBar(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.85),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF0284C7).withValues(alpha: 0.12),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new,
+                    color: Color(0xFF0369A1), size: 18),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFE0F2FE),
+                      Color(0xFFBAE6FD),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.white,
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF0284C7).withValues(alpha: 0.18),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.domain_rounded,
+                      size: 18,
+                      color: Color(0xFF0369A1),
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'DANH SÁCH TÒA NHÀ',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0369A1),
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 42),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdaptiveBuildingPanel(BuildContext context, bool isPhone) {
+    double spacing = isPhone ? 4.0 : 12.0;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+          horizontal: isPhone ? 8 : 16, vertical: isPhone ? 8 : 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFBAE6FD), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0284C7).withValues(alpha: 0.1),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.tune,
+                  size: isPhone ? 13 : 15, color: const Color(0xFF0369A1)),
+              const SizedBox(width: 4),
+              Text(
+                'ĐIỀU KHIỂN TÒA NHÀ SA BÀN',
+                style: TextStyle(
+                  fontSize: isPhone ? 11 : 12.5,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF0369A1),
+                  letterSpacing: 0.8,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: isPhone ? 6 : 10),
+
+          // HÀNG NÚT DÀN NGANG CĂN GIỮA ĐÃ SỬA LỖI RENDERFLEX
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: widget.buildings.asMap().entries.map((entry) {
+              int index = entry.key;
+              var b = entry.value;
+
+              Widget item = _buildBuildingButton(b, isPhone);
+
+              return isPhone
+                  ? Flexible(
+                      fit: FlexFit.tight,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          right: index == widget.buildings.length - 1 ? 0 : spacing,
+                        ),
+                        child: item,
+                      ),
+                    )
+                  : Padding(
+                      padding: EdgeInsets.only(
+                        right: index == widget.buildings.length - 1 ? 0 : spacing,
+                      ),
+                      child: SizedBox(width: 140.0, child: item),
+                    );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 6),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              '• Chạm 1 lần: Bật/Tắt Tòa   |   • Nhấn đúp 2 lần: Danh sách tầng',
+              style: TextStyle(
+                fontSize: isPhone ? 9.0 : 10.5,
+                color: const Color(0xFF0284C7),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBuildingButton(Map<String, dynamic> b, bool isPhone) {
+    List<int> bLeds = _getBuildingLeds(b);
+    bool isOn = widget.isAnyLedOn(bLeds);
+
+    return InkWell(
+      onTap: () {
+        widget.onToggleLeds(bLeds, !isOn);
+        setState(() {});
+      },
+      onDoubleTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => FloorsListScreen(
+              buildingName: b['name'],
+              floors: b['floors'],
+              ledStates: widget.ledStates,
+              onToggleLeds: widget.onToggleLeds,
+              isAnyLedOn: widget.isAnyLedOn,
+              extractLeds: widget.extractLeds,
+              selectedFilterType: widget.selectedFilterType,
+            ),
+          ),
+        );
+        setState(() {});
+      },
+      borderRadius: BorderRadius.circular(10),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: EdgeInsets.symmetric(
+          horizontal: isPhone ? 2 : 8,
+          vertical: isPhone ? 6 : 8,
+        ),
+        decoration: BoxDecoration(
+          gradient: isOn
+              ? const LinearGradient(
+                  colors: [Color(0xFFFF9800), Color(0xFFF57C00)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : const LinearGradient(
+                  colors: [Color(0xFFFCE7F3), Color(0xFFFBCFE8)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isOn ? Colors.amberAccent : const Color(0xFFF472B6),
+            width: 1.2,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(isPhone ? 2 : 4),
+              decoration: BoxDecoration(
+                color: isOn
+                    ? Colors.white.withValues(alpha: 0.25)
+                    : const Color(0xFFF472B6).withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isOn ? Icons.lightbulb : Icons.apartment,
+                size: isPhone ? 11 : 13,
+                color: isOn ? Colors.white : const Color(0xFFDB2777),
+              ),
+            ),
+            SizedBox(width: isPhone ? 2 : 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      b['name'] ?? 'TÒA NHÀ',
+                      style: TextStyle(
+                        fontSize: isPhone ? 10.0 : 12.0,
+                        fontWeight: FontWeight.bold,
+                        color: isOn ? Colors.white : const Color(0xFF831843),
+                      ),
+                    ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${bLeds.length} p | ${isOn ? "BẬT" : "TẮT"}',
+                      style: TextStyle(
+                        fontSize: isPhone ? 7.5 : 8.5,
+                        fontWeight: isOn ? FontWeight.bold : FontWeight.w600,
+                        color:
+                            isOn ? Colors.yellow.shade100 : const Color(0xFF9D174D),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

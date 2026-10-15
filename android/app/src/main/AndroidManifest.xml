@@ -1,15 +1,23 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- 1. QUYỀN KẾT NỐI INTERNET & WEBSOCKET (BẮT BUỘC) -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    
+    <!-- 2. QUYỀN TRUY CẬP BỘ NHỚ ĐỂ TẢI FIRMWARE .BIN -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage"/>
+    <!-- Dành cho Android 11+ (API 30+) -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
     <application
         android:label="Điều Khiển Sa Bàn"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true"> <!-- 2. BẬT HTTP/WEBSOCKET KHÔNG MÃ HÓA (WS://) -->
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"> <!-- 🟢 THÊM DÒNG NÀY ĐỂ BẬT QUYỀN GHI TRÊN ANDROID 10 -->
 
         <activity
             android:name=".MainActivity"
